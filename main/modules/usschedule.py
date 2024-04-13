@@ -3,6 +3,7 @@ import math
 from main import app
 from main.inline import button2
 from pyrogram.types import Message
+from pyrogram import enums
 from config import STATUS_ID, INDEX_ID, UPLOADS_ID, SCHEDULE_ID, UPLOADS_USERNAME
 
 GHOST_ID =  -1001895203720
@@ -58,6 +59,6 @@ async def update_schedulex():
     text += "\n<b>⏰ Current TimeZone :</b> <code>UTC</code>"
     
     try:
-        await schedulex.edit(text,parse_mode="html")
+        await schedulex.edit(text,parse_mode=enums.ParseMode.HTML)
     except:
         return

@@ -5,9 +5,8 @@ import aiohttp
 import requests
 import aiofiles
 import sys
-
 from main.modules.compressor import compress_video
-from moviepy.editor import VideoFileClip
+from pymediainfo import MediaInfo
 from main.modules.utils import episode_linker, get_duration, get_epnum, status_text, get_filesize, b64_to_str, str_to_b64, send_media_and_reply, get_durationx
 
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -87,19 +86,21 @@ async def tg_handler():
 
             pass
 
-            
-def get_audio_info(video_path):
+
+def get_audio_language(video_path):
     try:
-        video_clip = VideoFileClip(video_path)
-        audio = video_clip.audio
-        audio_info = {
-            'audio_track_language': audio.langcode
-        }
-        return audio_info
+        media_info = MediaInfo.parse(video_path)
+        for track in media_info.tracks:
+            if track.track_type == 'Audio':
+                language = track.language
+                language = language.replace("ja", "JP")
+                return language
+        return None
     except Exception as e:
         print(f"Error: {e}")
-        return None   
+        return None
         
+
 async def start_uploading(data):
 
     try:
@@ -127,7 +128,7 @@ async def start_uploading(data):
         msg = await app.send_photo(bin_id,photo=img,caption=title)
 
         print("Downloading --> ",name)
-        img, caption = await get_anilist_data(title)
+        img, caption, alink = await get_anilist_data(title)
         await asyncio.sleep(5)
         await status.edit(await status_text(f"Downloading {name}"),reply_markup=button1)
         file = await downloader(msg,link,size,title)
@@ -162,11 +163,11 @@ async def start_uploading(data):
         main = await app.send_photo(KAYO_ID,photo=img, caption=titm)
         video_path="video.mkv"
         
-        audio_info = await get_audio_info(video_path):      
-        if audio_info:
-            print("Audio Track Language: ", audio_info['audio_track_language'])
+        audio_language = get_audio_language(video_path)
+        if audio_language:
+            print("Audio Track Language:", audio_language)
         else:
-            print("Failed to get audio information.")
+            print("Failed to get audio language.")
         compressed = await compress_video(duration,main,tito)
     
 
@@ -181,7 +182,8 @@ async def start_uploading(data):
             os.rename("out.mkv",fpath)
   
         print("Uploading --> ",name)
-        video = await upload_video(msg,img,fpath,id,tit,name,size,main,subtitle,nyaasize,audio_info)
+        video = await upload_video(msg,img,fpath,id,tit,name,size,main,subtitle,nyaasize,audio_language, alink)
+
 
 
         try:

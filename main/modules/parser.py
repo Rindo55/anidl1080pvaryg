@@ -1,6 +1,7 @@
 import asyncio
 from main.modules.utils import status_text
 from main import status
+from main.modules.usschedule import update_schedulex
 from main.modules.db import get_animesdb, get_uploads, save_animedb
 import feedparser
 from main import queue
@@ -72,7 +73,7 @@ async def auto_parser():
                 print("Saved ", i["name"])   
 
         try:
-            await status.edit(await status_text("Idle..."),reply_markup=button1)
+            await update_schedulex()
         except:
             pass
 

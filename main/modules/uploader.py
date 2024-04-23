@@ -41,7 +41,10 @@ from main import app, status
 from pyrogram.errors import FloodWait
 
 from main.inline import button1
-async def upload_video(msg: Message, img, file, id, tit, name, ttl, main, subtitle, nyaasize, audio_info, alink):
+
+
+
+async def upload_video(msg: Message, img, file, id, tit, name, ttl, main, msubtitle, nyaasize, audio_info, alink):
     try:
         fuk = isfile(file)
         if fuk:
@@ -56,8 +59,9 @@ async def upload_video(msg: Message, img, file, id, tit, name, ttl, main, subtit
             filed = os.path.basename(file)
             print('filed: ', filed)
             anidltitle = filed.replace("[AniDL] ", "")
-            anidltitle = anidltitle.replace("[1080p Web-DL].mkv", "")
-            filed = filed.replace("[1080p Web-DL]", "[Web][1080p x265 10Bit][AAC][Erai-raws]")
+            anidltitle = anidltitle.replace(" [Web][480p x265 10Bit][Opus][DSNP ~ Varyg]", "")
+            
+            filed = filed.replace("[1080p Web-DL]", "[Web][480p x265 10Bit][Opus][Erai-raws]")
             fukpath = "downloads/" + filed
             caption = f"{filed}"
 
@@ -73,9 +77,9 @@ async def upload_video(msg: Message, img, file, id, tit, name, ttl, main, subtit
             )
             await asyncio.sleep(3)
             hash = "".join([random.choice(ascii_letters + digits) for n in range(50)])
-            save_file_in_db(filed, hash, subtitle, img, audio_info, tit, alink, size, upid)
+            save_file_in_db(filed, hash, msubtitle, img, audio_info, tit, alink, size, upid)
             print(hash)
-            gcaption = f"`📺 {filed}`\n\n`🔗 EP - {ep_num}:  https://anidl.ddlserverv1.me.in/beta/{hash}`" + "\n\n" + f"🔠 __{tit}__" + "\n" + "\n" + f"📝 `{subtitle}`"
+            gcaption = f"`📺 {filed}`\n\n`🔗 EP - {ep_num}:  https://anidl.ddlserverv1.me.in/beta/{hash}`" + "\n\n" + f"🔠 __{tit}__" + "\n" + "\n" + f"📝 `{msubtitle}`"
             dl_markup = InlineKeyboardMarkup(
                 [
                     [
@@ -94,8 +98,9 @@ async def upload_video(msg: Message, img, file, id, tit, name, ttl, main, subtit
                 message_id=upid,
                 reply_markup=dl_markup
             )
+            await asyncio.sleep(3)
             anidl_id=-1001234112068
-            anidlcap = f"<b>{anidltitle}</b>\n<i>({tit})</i>\n\n<blockquote><b>• Source:</b> <code>Erai-raws</code>\n<b>• Video:</b> <code>1080p x265 10Bit CRF@22</code>\n<b>• Audio:</b> <code>Japanese (AAC)</code>\n<b>• Subtitle:</b> <code>{subtitle}</code></blockquote>"
+            anidlcap = f"<b>{anidltitle}</b>\n<i>({tit})</i>\n\n<blockquote><b>• Source:</b> <code>VARYG (DSNP)</code>\n<b>• Video:</b> <code>480p x265 10Bit CRF@23</code>\n<b>• Audio:</b> <code>Japanese (OPUS)</code>\n<b>• Subtitle:</b> <code>{msubtitle}</code></blockquote>"
             anidl_markup = InlineKeyboardMarkup(
                 [
                     [
